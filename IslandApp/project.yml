@@ -1,0 +1,64 @@
+name: Island
+options:
+  bundleIdPrefix: com.island
+  deploymentTarget:
+    iOS: "16.2"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.2"
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1"
+
+targets:
+  Island:
+    type: application
+    platform: iOS
+    sources:
+      - Island
+      - Shared/IslandActivityAttributes.swift
+    info:
+      path: Island/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.island.app
+        PRODUCT_NAME: Island
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: NO
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0
+    dependencies:
+      - target: IslandWidget
+        embed: true
+
+  IslandWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - IslandWidget
+      - Shared/IslandActivityAttributes.swift
+    info:
+      path: IslandWidget/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.island.app.widget
+        PRODUCT_NAME: IslandWidget
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0
+
+schemes:
+  Island:
+    build:
+      targets:
+        Island: all
+        IslandWidget: all
+    run:
+      config: Release
+    archive:
+      config: Release
