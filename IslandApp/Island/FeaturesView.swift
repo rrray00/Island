@@ -54,7 +54,7 @@ struct CodeTabView: View {
                 }
             }
             .navigationTitle("取餐码")
-            .onChange(of: selectedItem) { _, item in
+            .onChange(of: selectedItem) { item in
                 guard let item else { return }
                 Task {
                     isRecognizing = true
