@@ -24,11 +24,25 @@ workflows:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
             archive
-      - name: Package unsigned IPA
+      - name: Patch Info.plist keys and package unsigned IPA
         script: |
           cd IslandApp
+          APP=build/Island.xcarchive/Products/Applications/Island.app
+          EX=$APP/PlugIns/IslandWidget.appex
+          # 主 App：显示名 + Live Activities 支持
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string Island" $APP/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Island" $APP/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSSupportsLiveActivities bool true" $APP/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :NSSupportsLiveActivities true" $APP/Info.plist
+          # 主 App：注册 app 扩展（widget）
+          /usr/libexec/PlistBuddy -c "Add :PlugInKit array" $APP/Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :PlugInKit:0 dict" $APP/Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :PlugInKit:0:_EXBundleIdentifier string com.island.app.widget" $APP/Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :PlugInKit:0:_EXExtensionPointIdentifier string com.apple.widgetkit-extension" $APP/Info.plist 2>/dev/null || true
+          # Widget 扩展：显示名 + NSExtension 声明
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string Island灵动岛" $EX/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Island灵动岛" $EX/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSExtension dict" $EX/Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSExtension:NSExtensionPointIdentifier string com.apple.widgetkit-extension" $EX/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :NSExtension:NSExtensionPointIdentifier com.apple.widgetkit-extension" $EX/Info.plist
           mkdir -p build/ipa/Payload
-          cp -r build/Island.xcarchive/Products/Applications/Island.app build/ipa/Payload/
+          cp -r $APP build/ipa/Payload/
           cd build/ipa
           zip -r ../Island-unsigned.ipa Payload
     artifacts:
