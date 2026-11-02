@@ -9,7 +9,6 @@ struct IslandLiveActivity: Widget {
             // 锁屏界面
             LockScreenView(context: context)
                 .activityBackgroundTint(Color.black.opacity(0.75))
-                .activitySystemActionTint(Color.white)
         } dynamicIsland: { context in
             DynamicIsland {
                 // 展开状态（长按）
